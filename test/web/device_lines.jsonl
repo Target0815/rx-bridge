@@ -1,0 +1,12 @@
+{"t":"hello","fw":"rx-bridge","ver":"0.3.2","board":"waveshare_rp2040_zero","pins":{"line":26,"rx":27,"tx":28},"mhz":125,"rcsys":["FrSky"]}
+{"t":"cfg","mode":0,"run":0,"rcsys":0,"inv":1,"hold":10,"saved":true}
+{"t":"st","run":0,"s":12,"pulses":1874,"baud":460800,"raw":461123,"edges":2210,"inv":1}
+{"t":"st","run":0,"s":13,"pulses":0,"baud":0,"raw":0,"edges":0,"inv":1}
+{"t":"ack","cmd":"set","ok":true,"msg":"Betriebsart wird nach Speichern und Neustart aktiv"}
+{"t":"cfg","mode":1,"run":0,"rcsys":0,"inv":1,"hold":10,"saved":false}
+{"t":"ack","cmd":"save","ok":true,"msg":"gespeichert"}
+{"t":"cfg","mode":1,"run":1,"rcsys":0,"inv":1,"hold":10,"saved":true}
+{"t":"st","run":1,"s":42,"proto":"FBUS","baud":460800,"nch":16,"rc":111,"lq":98,"rssi":87,"fs":0,"tlm":48,"ap":1,"up":37,"null":2,"late":0,"crc_rx":0,"crc_fc":0,"ptdrop":0,"fc":"ArduPlane V4.5.7 (5e1a7b3c)"}
+{"t":"st","run":1,"s":43,"proto":"FBUS","baud":460800,"nch":16,"rc":0,"lq":0,"rssi":87,"fs":1,"tlm":48,"ap":1,"up":37,"null":2,"late":1,"crc_rx":3,"crc_fc":0,"ptdrop":0,"fc":"ArduPlane V4.5.7 (5e1a7b3c)"}
+{"t":"st","run":1,"s":44,"proto":null,"baud":115200,"nch":0,"rc":0,"lq":0,"rssi":0,"fs":0,"tlm":0,"ap":0,"up":0,"null":0,"late":0,"crc_rx":0,"crc_fc":0,"ptdrop":0,"fc":"Q\"uote\\x"}
+{"t":"ack","cmd":"error","ok":false,"msg":"hold: 1 bis 100 us"}

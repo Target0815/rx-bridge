@@ -1,0 +1,60 @@
+; UART programs for the converter mode. 8 PIO cycles per bit, clkdiv = f_sys / (8 * baud).
+; All programs work in the logical UART domain (idle = high); inversion of the
+; receiver line is done with the GPIO input/output overrides.
+
+
+; ---------------------------------------------------------------------------
+; uart_rx8: 8N1 receiver. in_base = jmp_pin = RX pin.
+; Shift right, no autopush: the byte is in bits 31..24 of the FIFO word.
+; A frame with a bad stop bit is dropped.
+; ---------------------------------------------------------------------------
+.program uart_rx8
+start:
+    wait 0 pin 0            ; start bit
+    set x, 7        [10]    ; to the middle of data bit 0 (12 cycles incl. wait/set)
+bitloop:
+    in pins, 1
+    jmp x-- bitloop [6]
+    jmp pin good_stop
+    wait 1 pin 0            ; framing error / break: wait for idle and drop
+    jmp start
+good_stop:
+    push
+
+
+; ---------------------------------------------------------------------------
+; uart_tx8: 8N1 transmitter, push-pull. out_base = side_set_base = TX pin.
+; ---------------------------------------------------------------------------
+.program uart_tx8
+.side_set 1 opt
+    pull            side 1 [7]  ; stop bit / idle
+    set x, 7        side 0 [7]  ; start bit
+bitloop:
+    out pins, 1
+    jmp x-- bitloop [6]
+
+
+; ---------------------------------------------------------------------------
+; hd_uart_tx8: 8N1 transmitter for the single-wire receiver bus.
+; set_base = out_base = side_set_base = LINE. Side-set drives the pin direction:
+; the line is only driven while bytes are being sent and released right after
+; the last stop bit, so the receiver can talk again.
+; Needs sm_config_set_mov_status(STATUS_TX_LESSTHAN, 1).
+; ---------------------------------------------------------------------------
+.program hd_uart_tx8
+.side_set 1 opt pindirs
+release:
+    pull block      side 0      ; line released while idle
+send:
+    set x, 7        side 1      ; take the line, still at idle level
+    set pins, 0            [7]  ; start bit
+bitloop:
+    out pins, 1            [6]
+    jmp x-- bitloop
+    set pins, 1            [6]  ; stop bit
+    mov x, status               ; x = ~0 if the TX FIFO is empty
+    jmp !x more
+    jmp release
+more:
+    pull block
+    jmp send

@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rx-bridge Konfiguration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --panel: #e6eaee;
+  --surface: #f6f8fa;
+  --ink: #1b2832;
+  --muted: #5b6b77;
+  --rule: #c5cdd4;
+  --signal: #1f6fd1;
+  --signal-soft: #d6e5f8;
+  --ok: #23804f;
+  --warn: #b26b00;
+  --fail: #b8322a;
+  --led-off: #9aa6b0;
+  --sans: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --cond: "Barlow Semi Condensed", "Arial Narrow", "Barlow", system-ui, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --panel: #161d23; --surface: #1e272f; --ink: #e3e9ee; --muted: #9aa9b5; --rule: #34414c;
+    --signal: #5aa0f2; --signal-soft: #1d3550; --ok: #4fbf84; --warn: #e5a23a; --fail: #ef6b62; --led-off: #4a5661;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--panel); }
+body {
+  margin: 0; background: var(--panel); color: var(--ink);
+  font: 400 16px/1.5 var(--sans);
+}
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+
+header {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  max-width: 1120px; margin: 0 auto; padding: 20px 20px 8px;
+}
+h1 { font: 600 26px/1.1 var(--cond); margin: 0; letter-spacing: .01em; }
+h1 small { font: 400 15px var(--sans); color: var(--muted); margin-left: 10px; }
+#devinfo { color: var(--muted); font-size: 14px; }
+
+.btn {
+  border: 1px solid var(--rule); background: var(--surface); border-radius: 6px;
+  padding: 8px 16px; cursor: pointer; font-weight: 500;
+}
+.btn:hover:not(:disabled) { border-color: var(--ink); }
+.btn.primary { background: var(--signal); border-color: var(--signal); color: #fff; }
+.btn.primary:hover:not(:disabled) { filter: brightness(1.08); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* signal path: the one memorable element */
+.path {
+  max-width: 1120px; margin: 8px auto 0; padding: 0 20px;
+}
+.path-inner {
+  display: grid; grid-template-columns: 1fr 2fr 1.2fr 2fr 1fr; align-items: center;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 22px 24px;
+}
+.node { text-align: center; }
+.node b { display: block; font: 600 20px/1.2 var(--cond); }
+.node span { color: var(--muted); font-size: 13px; }
+.node.module b { font-size: 22px; }
+.led {
+  display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--led-off);
+  margin-bottom: 6px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+}
+.led.blue { background: #2f7ff0; box-shadow: 0 0 10px #2f7ff0; }
+.led.white { background: #fff; box-shadow: 0 0 10px #9cc3ff; }
+.led.blink { animation: blink .2s steps(1) infinite; }
+@keyframes blink { 50% { background: var(--led-off); box-shadow: none; } }
+.wire { position: relative; padding: 0 10px; text-align: center; }
+.wire .line { height: 3px; background: var(--rule); border-radius: 2px; position: relative; margin: 8px 0; }
+.wire.live .line { background: var(--signal); }
+.wire.dead .line { background: repeating-linear-gradient(90deg, var(--rule) 0 8px, transparent 8px 14px); }
+.wire .line::after {
+  content: ""; position: absolute; right: -2px; top: -5px; border: 6.5px solid transparent;
+  border-left: 9px solid var(--rule); border-right: 0;
+}
+.wire.two .line::before {
+  content: ""; position: absolute; left: -2px; top: -5px; border: 6.5px solid transparent;
+  border-right: 9px solid var(--rule); border-left: 0;
+}
+.wire.live .line::after { border-left-color: var(--signal); }
+.wire.live.two .line::before { border-right-color: var(--signal); }
+.wire .proto { font: 600 17px/1.2 var(--cond); }
+.wire .rate { font-size: 13px; color: var(--muted); min-height: 1.5em; }
+@media (prefers-reduced-motion: reduce) { .led.blink { animation: none; } }
+
+main {
+  max-width: 1120px; margin: 0 auto; padding: 20px;
+  display: grid; grid-template-columns: minmax(300px, 400px) 1fr; gap: 20px; align-items: start;
+}
+section {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 20px;
+}
+h2 { font: 600 19px/1.2 var(--cond); margin: 0 0 14px; }
+.field { margin-bottom: 18px; }
+.field > label, .field > .lbl { display: block; font-weight: 500; margin-bottom: 6px; }
+.hint { color: var(--muted); font-size: 14px; margin: 4px 0 0; }
+
+.modes { display: grid; gap: 8px; }
+.mode {
+  display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: start;
+  border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px; cursor: pointer;
+}
+.mode input { margin: 4px 0 0; grid-row: span 2; accent-color: var(--signal); }
+.mode b { font-weight: 600; }
+.mode span { color: var(--muted); font-size: 14px; }
+.mode:has(input:checked) { border-color: var(--signal); background: var(--signal-soft); }
+.mode:has(input:disabled) { cursor: not-allowed; opacity: .6; }
+
+select { width: 100%; padding: 7px 10px; border: 1px solid var(--rule); border-radius: 6px; background: var(--panel); }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.seg label { padding: 6px 14px; cursor: pointer; }
+.seg label + label { border-left: 1px solid var(--rule); }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label:has(input:checked) { background: var(--signal); color: #fff; }
+.seg label:has(input:focus-visible) { outline: 2px solid var(--signal); outline-offset: -2px; }
+
+.savebar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; border-top: 1px solid var(--rule); padding-top: 16px; }
+#savestate { font-size: 14px; color: var(--muted); flex-basis: 100%; }
+#savestate.dirty { color: var(--warn); }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0; margin: 0 0 16px; }
+.stat { padding: 8px 12px 10px 0; border-bottom: 1px solid var(--rule); }
+.stat dt { color: var(--muted); font-size: 13px; }
+.stat dd { margin: 0; font: 600 22px/1.2 var(--cond); }
+.stat dd small { display: block; font: 400 13px/1.3 var(--sans); color: var(--muted); }
+.stat dd.txt { font-size: 17px; line-height: 1.3; }
+.stat dd.ok { color: var(--ok); } .stat dd.warn { color: var(--warn); } .stat dd.fail { color: var(--fail); }
+
+.logbar { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+.logbar h2 { margin: 0; }
+.logbar div { display: flex; gap: 8px; }
+.logbar .btn { padding: 4px 12px; font-size: 14px; }
+.logbar div { align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.check { font-size: 14px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; margin-right: 6px; cursor: pointer; }
+.check input { accent-color: var(--signal); }
+#log {
+  height: 340px; overflow: auto; margin: 0; padding: 10px 12px; border-radius: 6px;
+  background: var(--panel); border: 1px solid var(--rule);
+  font: 13px/1.55 var(--mono); white-space: pre-wrap; word-break: break-word;
+}
+#log .e { color: var(--fail); } #log .i { color: var(--signal); } #log .s { color: var(--muted); }
+
+.notice {
+  max-width: 1120px; margin: 12px auto 0; padding: 0 20px;
+}
+.notice p {
+  margin: 0; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--warn);
+  background: var(--surface); color: var(--ink);
+}
+.notice p.err { border-color: var(--fail); }
+[hidden] { display: none !important; }
+
+@media (max-width: 820px) {
+  main { grid-template-columns: 1fr; }
+  .path-inner { grid-template-columns: 1fr; gap: 6px; padding: 16px; }
+  .wire .line { transform: rotate(90deg); width: 40px; margin: 22px auto; }
+  .wire .proto, .wire .rate { text-align: center; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>rx-bridge <small>Konfiguration</small></h1>
+    <div id="devinfo">Nicht verbunden</div>
+  </div>
+  <button id="connect" class="btn primary">Verbinden</button>
+</header>
+
+<div class="notice" id="nosupport" hidden><p class="err">Dieser Browser kann nicht auf USB-Geräte zugreifen. Bitte die Seite in Chrome oder Edge auf dem Computer öffnen.</p></div>
+<div class="notice" id="oldfw" hidden><p>Das Modul antwortet nicht auf die Konfigurationsbefehle. Ist Firmware 0.3 oder neuer installiert?
+  Falls ja: Modul kurz vom USB trennen, wieder anstecken und neu verbinden.</p></div>
+<div class="notice" id="msg" hidden><p></p></div>
+
+<div class="path" aria-live="polite">
+  <div class="path-inner">
+    <div class="node"><b>Empfänger</b><span id="rxsys">FrSky</span></div>
+    <div class="wire two" id="wire1"><div class="proto" id="w1proto">–</div><div class="line"></div><div class="rate" id="w1rate"></div></div>
+    <div class="node module"><span class="led" id="led" role="img" aria-label="Status-LED"></span><b>rx-bridge</b><span id="modename">–</span></div>
+    <div class="wire two" id="wire2"><div class="proto" id="w2proto">–</div><div class="line"></div><div class="rate" id="w2rate"></div></div>
+    <div class="node"><b>Flight-Controller</b><span id="fcname">UART</span></div>
+  </div>
+</div>
+
+<main>
+  <section aria-labelledby="h-set">
+    <h2 id="h-set">Einstellungen</h2>
+    <fieldset class="field" style="border:0;padding:0;margin:0 0 18px">
+      <legend class="lbl" style="font-weight:500;margin-bottom:6px;padding:0">Betriebsart</legend>
+      <div class="modes">
+        <label class="mode"><input type="radio" name="mode" value="0" disabled>
+          <b>Inverter</b><span>Signal wird nur invertiert. FC auf S.Port, F.Port oder FBUS einstellen.</span></label>
+        <label class="mode"><input type="radio" name="mode" value="1" disabled>
+          <b>Konverter</b><span>F.Port/FBUS wird zu CRSF. FC auf CRSF einstellen.</span></label>
+      </div>
+      <p class="hint" id="modehint"></p>
+    </fieldset>
+
+    <div class="field">
+      <label for="rcsys">RC-System</label>
+      <select id="rcsys" disabled><option value="0">FrSky (S.Port, F.Port, FBUS)</option></select>
+      <p class="hint">Weitere Systeme folgen.</p>
+    </div>
+
+    <div class="field">
+      <span class="lbl" id="lbl-inv">Empfängersignal</span>
+      <div class="seg" role="radiogroup" aria-labelledby="lbl-inv">
+        <label><input type="radio" name="inv" value="1" disabled>Invertiert</label>
+        <label><input type="radio" name="inv" value="0" disabled>Nicht invertiert</label>
+      </div>
+      <p class="hint">FrSky-Empfänger senden invertiert. „Nicht invertiert“ nur für Empfänger mit nicht invertiertem Ausgang.</p>
+    </div>
+
+    <div class="field" id="holdfield">
+      <label for="hold">Haltezeit nach FC-Telegramm</label>
+      <select id="hold" disabled>
+        <option value="2">2 µs</option><option value="5">5 µs</option><option value="10">10 µs</option>
+        <option value="20">20 µs</option><option value="50">50 µs</option>
+      </select>
+      <p class="hint">Nur Inverter-Betrieb. Standard 10 µs.</p>
+    </div>
+
+    <div class="savebar">
+      <span id="savestate">Nicht verbunden</span>
+      <button class="btn primary" id="save" disabled>Speichern</button>
+      <button class="btn" id="reboot" disabled>Neu starten</button>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-status">
+    <h2 id="h-status">Status</h2>
+    <dl class="stats" id="stats"><div class="stat"><dt>Verbindung</dt><dd>–</dd></div></dl>
+    <div class="logbar">
+      <h2>Protokoll</h2>
+      <div>
+        <label class="check"><input type="checkbox" id="logauto" checked> Beim Verbinden leeren</label>
+        <button class="btn" id="logsave">Speichern</button><button class="btn" id="logclear">Leeren</button>
+      </div>
+    </div>
+    <pre id="log" aria-live="off"></pre>
+  </section>
+</main>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const RP_VID = 0x2E8A;                 // Raspberry Pi (RP2040 / RP2350)
+
+const st = { port: null, reader: null, writer: null, connected: false, cfg: null, hello: null,
+             expectReboot: false, helloTimer: null, lastStatus: 0 };
+
+/* ---------------- log ---------------- */
+const MAXLOG = 2000;
+function log(text, cls) {
+  const el = $("log");
+  const atEnd = el.scrollTop + el.clientHeight >= el.scrollHeight - 4;
+  const line = document.createElement("div");
+  if (cls) line.className = cls;
+  line.textContent = text;
+  el.appendChild(line);
+  while (el.childElementCount > MAXLOG) el.firstChild.remove();
+  if (atEnd) el.scrollTop = el.scrollHeight;
+}
+$("logclear").onclick = () => { $("log").textContent = ""; };
+try { $("logauto").checked = localStorage.getItem("rxb-logauto") !== "0"; } catch (e) {}
+$("logauto").onchange = () => { try { localStorage.setItem("rxb-logauto", $("logauto").checked ? "1" : "0"); } catch (e) {} };
+$("logsave").onclick = () => {
+  const blob = new Blob([[...$("log").children].map((d) => d.textContent).join("\n") + "\n"], { type: "text/plain" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "rx-bridge-protokoll-" + new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-") + ".txt";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+
+function notice(text, isErr) {
+  const n = $("msg");
+  if (!text) { n.hidden = true; return; }
+  n.querySelector("p").textContent = text;
+  n.querySelector("p").className = isErr ? "err" : "";
+  n.hidden = false;
+}
+
+/* ---------------- serial ---------------- */
+async function send(line) {
+  if (!st.writer) return;
+  await st.writer.write(new TextEncoder().encode(line + "\n"));
+}
+
+async function openPort(port) {
+  await port.open({ baudRate: 115200 });
+  /* the Pico SDK only sends over USB while DTR is set */
+  try { await port.setSignals({ dataTerminalReady: true, requestToSend: true }); } catch (e) {}
+  st.port = port;
+  st.writer = port.writable.getWriter();
+  st.connected = true;
+  st.hello = null;
+  $("connect").textContent = "Trennen";
+  $("oldfw").hidden = true;
+  notice("");
+  log("Verbunden.", "i");
+  readLoop(port);
+  await send("#json 1");
+  await send("#hello");
+  clearTimeout(st.helloTimer);
+  st.helloTimer = setTimeout(() => { if (st.connected && !st.hello) $("oldfw").hidden = false; }, 2000);
+}
+
+async function readLoop(port) {
+  const dec = new TextDecoder();
+  let buf = "";
+  try {
+    st.reader = port.readable.getReader();
+    for (;;) {
+      const { value, done } = await st.reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let i;
+      while ((i = buf.indexOf("\n")) >= 0) {
+        const l = buf.slice(0, i).replace(/\r$/, "");
+        buf = buf.slice(i + 1);
+        if (l.length) handleLine(l);
+      }
+    }
+  } catch (e) {
+    /* device unplugged or rebooted */
+  } finally {
+    try { st.reader.releaseLock(); } catch (e) {}
+  }
+  if (st.port === port) lostConnection();
+}
+
+async function closePort() {
+  const port = st.port;
+  st.port = null;
+  st.connected = false;
+  try { await st.reader?.cancel(); } catch (e) {}
+  try { st.writer?.releaseLock(); } catch (e) {}
+  try { await port?.close(); } catch (e) {}
+  st.reader = st.writer = null;
+}
+
+async function lostConnection() {
+  await closePort();
+  setDisconnected();
+  if (st.expectReboot) {
+    st.expectReboot = false;
+    log("Gerät startet neu, warte auf die Verbindung ...", "i");
+    for (let i = 0; i < 40; i++) {
+      await new Promise((r) => setTimeout(r, 500));
+      const ports = (await navigator.serial.getPorts()).filter((p) => p.getInfo().usbVendorId === RP_VID);
+      for (const p of ports) {
+        try { await openPort(p); return; } catch (e) { /* not ready yet */ }
+      }
+    }
+    log("Gerät nicht wieder gefunden. Bitte erneut verbinden.", "e");
+  } else {
+    log("Verbindung getrennt.", "e");
+  }
+}
+
+function setDisconnected() {
+  $("connect").textContent = "Verbinden";
+  $("devinfo").textContent = "Nicht verbunden";
+  $("savestate").textContent = "Nicht verbunden";
+  $("savestate").className = "";
+  st.cfg = null;
+  setEnabled(false);
+  showPath(null);
+  $("stats").innerHTML = '<div class="stat"><dt>Verbindung</dt><dd>–</dd></div>';
+  setLed("off");
+}
+
+$("connect").onclick = async () => {
+  if (st.connected) { st.expectReboot = false; await closePort(); setDisconnected(); log("Getrennt.", "s"); return; }
+  try {
+    const port = await navigator.serial.requestPort({ filters: [{ usbVendorId: RP_VID }] });
+    if ($("logauto").checked) $("log").textContent = "";
+    await openPort(port);
+  } catch (e) {
+    if (e && e.name !== "NotFoundError") { notice("Verbinden fehlgeschlagen: " + e.message + ". Ist ein Terminalprogramm noch geöffnet?", true); }
+  }
+};
+
+/* ---------------- device messages ---------------- */
+function handleLine(l) {
+  if (l[0] !== "{") { log(l); return; }
+  let m;
+  try { m = JSON.parse(l); } catch (e) { log(l); return; }
+  switch (m.t) {
+    case "hello":
+      st.hello = m;
+      $("oldfw").hidden = true;
+      $("devinfo").textContent = `Firmware ${m.ver} auf ${boardName(m.board)}, ${m.mhz} MHz`;
+      log(`rx-bridge ${m.ver} auf ${boardName(m.board)}, Leitung GPIO${m.pins.line}, RX GPIO${m.pins.rx}, TX GPIO${m.pins.tx}`, "i");
+      break;
+    case "cfg": showCfg(m); break;
+    case "ack":
+      if (!m.ok) { log("Fehler: " + m.msg, "e"); notice(m.msg, true); }
+      else { if (m.cmd !== "json") notice(""); if (m.msg) log(m.msg, "i"); }
+      break;
+    case "st": showStatus(m); break;
+  }
+}
+
+const BOARDS = {
+  pico: "Raspberry Pi Pico", pico2: "Raspberry Pi Pico 2",
+  waveshare_rp2040_zero: "Waveshare RP2040-Zero", waveshare_rp2350_zero: "Waveshare RP2350-Zero",
+  seeed_xiao_rp2040: "Seeed XIAO RP2040", seeed_xiao_rp2350: "Seeed XIAO RP2350",
+};
+const boardName = (b) => BOARDS[b] || b;
+const MODE = ["Inverter", "Konverter"];
+
+function setEnabled(on) {
+  document.querySelectorAll("input[name=mode], input[name=inv]").forEach((i) => (i.disabled = !on));
+  for (const id of ["rcsys", "hold", "save", "reboot"]) $(id).disabled = !on;
+}
+
+function showCfg(c) {
+  st.cfg = c;
+  setEnabled(true);
+  document.querySelector(`input[name=mode][value="${c.mode}"]`).checked = true;
+  document.querySelector(`input[name=inv][value="${c.inv}"]`).checked = true;
+  $("rcsys").value = String(c.rcsys);
+  if (![...$("hold").options].some((o) => o.value === String(c.hold))) {
+    $("hold").add(new Option(c.hold + " µs", String(c.hold)));
+  }
+  $("hold").value = String(c.hold);
+  $("holdfield").hidden = c.mode !== 0;
+  $("modename").textContent = MODE[c.run];
+  const pending = c.mode !== c.run;
+  $("modehint").textContent = pending ? `Aktiv ist noch „${MODE[c.run]}“. Die neue Betriebsart gilt nach Speichern und Neustart.` : "";
+  $("save").textContent = pending ? "Speichern und neu starten" : "Speichern";
+  $("savestate").textContent = c.saved ? "Alle Einstellungen sind gespeichert." : "Nicht gespeicherte Änderungen.";
+  $("savestate").className = c.saved ? "" : "dirty";
+  $("save").disabled = c.saved && !pending;
+  showPath(null);
+}
+
+function setLed(kind) {
+  const led = $("led");
+  led.className = "led" + (kind === "blue" ? " blue" : kind === "white" ? " white" : kind === "fail" ? " blue blink" : "");
+}
+
+function wire(id, proto, rate, live, twoWay) {
+  $(id).className = "wire" + (twoWay ? " two" : "") + (live === true ? " live" : live === false ? " dead" : "");
+  $(id.replace("wire", "w") + "proto").textContent = proto;
+  $(id.replace("wire", "w") + "rate").textContent = rate || "";
+}
+
+function showPath(s) {
+  const run = st.cfg ? st.cfg.run : null;
+  if (run === null) {
+    wire("wire1", "–", "", null, true); wire("wire2", "–", "", null, true);
+    $("modename").textContent = "–"; $("fcname").textContent = "UART"; return;
+  }
+  if (run === 0) {
+    const ok = s && s.pulses > 0;
+    wire("wire1", ok ? `${s.baud ? (s.baud / 1000).toLocaleString("de-DE") + " kBd" : "Signal"}` : "kein Signal",
+         ok ? "invertiert, bitgenau" : "", s ? ok : null, true);
+    wire("wire2", "nicht invertiert", s ? (s.edges ? "FC sendet" : "FC sendet nicht") : "", s ? s.edges > 0 : null, true);
+    $("fcname").textContent = "S.Port / F.Port / FBUS";
+  } else {
+    const ok = s && s.proto;
+    wire("wire1", ok ? s.proto : "suche …", ok ? `${s.rc} Frames/s, LQ ${s.lq} %` : (s ? `${s.baud.toLocaleString("de-DE")} Bd` : ""),
+         s ? (ok && !s.fs) : null, true);
+    wire("wire2", "CRSF", s ? `${s.rc} Kanäle/s, ${s.tlm} Telemetrie/s zurück` : "", s ? s.rc > 0 : null, true);
+    $("fcname").textContent = s ? `${fcName(s)}, CRSF` : "CRSF";
+  }
+}
+
+function fcName(s) {
+  return s.fc || (s.ap ? "ArduPilot" : s.tlm ? "unbekannt" : "–");
+}
+
+function esc(t) {
+  return String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+}
+function stat(label, value, cls, sub) {
+  return `<div class="stat"><dt>${label}</dt><dd class="${cls || ""}">${esc(value)}${sub ? `<small>${esc(sub)}</small>` : ""}</dd></div>`;
+}
+
+function showStatus(s) {
+  st.lastStatus = Date.now();
+  if (!st.cfg || st.cfg.run !== s.run) { send("#get"); }
+  showPath(s);
+  let html = "", text;
+  const t = `[${String(s.s).padStart(5)} s] `;
+  if (s.run === 0) {
+    const ok = s.pulses > 0;
+    html += stat("Empfängersignal", ok ? (s.baud ? s.baud.toLocaleString("de-DE") + " Bd" : "Signal") : "kein Signal", ok ? "ok" : "warn");
+    html += stat("Pulse pro Sekunde", s.pulses.toLocaleString("de-DE"));
+    html += stat("FC sendet", s.edges ? "ja" : "nein", s.edges ? "ok" : "");
+    html += stat("Empfängersignal", s.inv ? "invertiert" : "nicht invertiert");
+    text = ok ? `${t}Leitung: ${s.pulses} Pulse/s, ~${s.baud || s.raw} Baud` : `${t}Leitung: kein Signal`;
+    text += ` | FC sendet: ${s.edges ? "ja (" + s.edges + " Flanken/s)" : "nein"}`;
+    setLed(s.edges ? "white" : ok ? "blue" : "off");
+  } else {
+    const ok = !!s.proto;
+    html += stat("Empfänger", ok ? s.proto : "kein Signal", ok ? "ok" : "warn", ok ? `${s.nch} Kanäle` : "");
+    html += stat("Kanal-Frames/s", s.rc);
+    html += stat("Link-Qualität", ok ? s.lq + " %" : "–", !ok ? "" : s.lq >= 80 ? "ok" : s.lq >= 50 ? "warn" : "fail");
+    html += stat("RSSI (roh)", ok ? s.rssi : "–");
+    html += stat("Failsafe", s.fs ? "JA" : "nein", s.fs ? "fail" : ok ? "ok" : "");
+    html += stat("Flight-Controller", fcName(s), (s.fc ? "ok" : "") + (fcName(s).length > 12 ? " txt" : ""), s.fc ? "erkannt" : s.tlm ? "wird abgefragt" : "");
+    html += stat("Telemetrie von der FC/s", s.tlm, s.tlm ? "ok" : "");
+    html += stat("Telemetrie zum Sender/s", s.up, "", `davon ${s.null} leer`);
+    const errs = s.crc_rx + s.crc_fc + s.late + s.ptdrop;
+    html += stat("Fehler/s", errs, errs ? "warn" : "");
+    text = ok ? `${t}${s.proto} ${s.baud} Bd, ${s.nch} Kan. | Kanäle ${s.rc}/s | LQ ${s.lq} % | RSSI ${s.rssi} | Failsafe ${s.fs ? "JA" : "nein"}`
+              : `${t}Empfänger: kein F.Port/FBUS-Signal (suche, ${s.baud} Baud)`;
+    text += ` | FC ${fcName(s)}, Telemetrie ${s.tlm}/s | zum Empfänger ${s.up}/s, davon ${s.null} leer`;
+    if (errs) text += ` | Fehler: Prüfsumme Empf. ${s.crc_rx}, FC ${s.crc_fc}, zu spät ${s.late}, Passthrough verworfen ${s.ptdrop}`;
+    setLed(s.fs ? "fail" : s.tlm ? "white" : ok ? "blue" : "off");
+  }
+  $("stats").innerHTML = html;
+  log(text, s.run === 1 && (s.fs || !s.proto) ? "e" : undefined);
+}
+
+/* ---------------- controls ---------------- */
+document.querySelectorAll("input[name=mode]").forEach((i) => (i.onchange = () => send("#set mode=" + i.value)));
+document.querySelectorAll("input[name=inv]").forEach((i) => (i.onchange = () => send("#set inv=" + i.value)));
+$("rcsys").onchange = () => send("#set rcsys=" + $("rcsys").value);
+$("hold").onchange = () => send("#set hold=" + $("hold").value);
+async function reboot(text) {
+  st.expectReboot = true;
+  log(text, "i");
+  const port = st.port;
+  await send("#reboot");
+  setTimeout(() => {
+    if (st.port === port && st.connected) {      /* still there: the module did not restart */
+      st.expectReboot = false;
+      log("Das Modul hat nicht neu gestartet.", "e");
+      notice("Das Modul hat nicht neu gestartet. Bitte kurz vom USB trennen und wieder anstecken.", true);
+    }
+  }, 4000);
+}
+$("save").onclick = async () => {
+  const pending = st.cfg && st.cfg.mode !== st.cfg.run;
+  await send("#save");
+  if (pending) await reboot("Neustart mit neuer Betriebsart ...");
+};
+$("reboot").onclick = () => reboot("Neustart ...");
+
+/* status timeout: device stops talking */
+setInterval(() => {
+  if (st.connected && st.lastStatus && Date.now() - st.lastStatus > 3500) {
+    st.lastStatus = 0;
+    log("Keine Statusmeldungen mehr vom Gerät.", "e");
+  }
+}, 1000);
+
+if (!("serial" in navigator)) {
+  $("nosupport").hidden = false;
+  $("connect").disabled = true;
+} else {
+  navigator.serial.addEventListener("disconnect", (e) => { if (st.port && e.target === st.port) { /* readLoop handles it */ } });
+}
+setDisconnected();
+log("Modul per USB anschließen und auf „Verbinden“ klicken.", "s");
+</script>
+</body>
+</html>

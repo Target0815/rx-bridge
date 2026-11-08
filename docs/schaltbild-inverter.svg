@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="1000" height="500" font-family="Barlow, Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="1000" height="500" fill="#ffffff"/>
+<text x="30" y="40" font-size="20" font-weight="600" fill="#1b2832" text-anchor="start">Inverter-Betrieb: Protokoll bleibt gleich, nur die Polarität wird gedreht</text>
+<rect x="40" y="140" width="170" height="200" rx="10" fill="#f6f8fa" stroke="#1b2832" stroke-width="1.5"/>
+<text x="125.0" y="170" font-size="19" font-weight="600" fill="#1b2832" text-anchor="middle">Empfänger</text>
+<text x="125.0" y="190" font-size="13" font-weight="400" fill="#5b6b77" text-anchor="middle">FrSky</text>
+<circle cx="210" cy="205" r="4.5" fill="#1b2832"/>
+<text x="198" y="210" font-size="14" font-weight="500" fill="#1b2832" text-anchor="end">S</text>
+<circle cx="210" cy="245" r="4.5" fill="#1b2832"/>
+<text x="198" y="250" font-size="14" font-weight="500" fill="#1b2832" text-anchor="end">+</text>
+<circle cx="210" cy="285" r="4.5" fill="#1b2832"/>
+<text x="198" y="290" font-size="14" font-weight="500" fill="#1b2832" text-anchor="end">−</text>
+<rect x="400" y="140" width="200" height="270" rx="10" fill="#f6f8fa" stroke="#1b2832" stroke-width="1.5"/>
+<text x="500.0" y="170" font-size="19" font-weight="600" fill="#1b2832" text-anchor="middle">rx-bridge</text>
+<text x="500.0" y="190" font-size="13" font-weight="400" fill="#5b6b77" text-anchor="middle">RP2040 / RP2350</text>
+<circle cx="400" cy="205" r="4.5" fill="#1b2832"/>
+<text x="412" y="210" font-size="14" font-weight="500" fill="#1b2832" text-anchor="start">GPIO26 LEITUNG</text>
+<circle cx="400" cy="245" r="4.5" fill="#1b2832"/>
+<text x="412" y="250" font-size="14" font-weight="500" fill="#1b2832" text-anchor="start">5V</text>
+<circle cx="400" cy="285" r="4.5" fill="#1b2832"/>
+<text x="412" y="290" font-size="14" font-weight="500" fill="#1b2832" text-anchor="start">GND</text>
+<circle cx="600" cy="330" r="4.5" fill="#1b2832"/>
+<text x="588" y="335" font-size="14" font-weight="500" fill="#1b2832" text-anchor="end">GPIO27 RX</text>
+<circle cx="600" cy="370" r="4.5" fill="#1b2832"/>
+<text x="588" y="375" font-size="14" font-weight="500" fill="#1b2832" text-anchor="end">GPIO28 TX</text>
+<circle cx="600" cy="245" r="4.5" fill="#1b2832"/>
+<text x="588" y="250" font-size="14" font-weight="500" fill="#1b2832" text-anchor="end">5V</text>
+<circle cx="600" cy="285" r="4.5" fill="#1b2832"/>
+<text x="588" y="290" font-size="14" font-weight="500" fill="#1b2832" text-anchor="end">GND</text>
+<rect x="790" y="140" width="170" height="270" rx="10" fill="#f6f8fa" stroke="#1b2832" stroke-width="1.5"/>
+<text x="875.0" y="170" font-size="19" font-weight="600" fill="#1b2832" text-anchor="middle">Flight-Controller</text>
+<text x="875.0" y="190" font-size="13" font-weight="400" fill="#5b6b77" text-anchor="middle">F405, INAV / ArduPilot</text>
+<circle cx="790" cy="330" r="4.5" fill="#1b2832"/>
+<text x="802" y="335" font-size="14" font-weight="500" fill="#1b2832" text-anchor="start">TX</text>
+<circle cx="790" cy="370" r="4.5" fill="#1b2832"/>
+<text x="802" y="375" font-size="14" font-weight="500" fill="#1b2832" text-anchor="start">RX</text>
+<circle cx="790" cy="245" r="4.5" fill="#1b2832"/>
+<text x="802" y="250" font-size="14" font-weight="500" fill="#1b2832" text-anchor="start">5V</text>
+<circle cx="790" cy="285" r="4.5" fill="#1b2832"/>
+<text x="802" y="290" font-size="14" font-weight="500" fill="#1b2832" text-anchor="start">GND</text>
+<path d="M 210 205 L 265 205" fill="none" stroke="#1f6fd1" stroke-width="2.5" stroke-linejoin="round"/>
+<rect x="265" y="196" width="54" height="18" fill="#fff" stroke="#1b2832" stroke-width="1.5"/>
+<text x="292" y="189" font-size="13" font-weight="600" fill="#1b2832" text-anchor="middle">470 Ω</text>
+<path d="M 319 205 L 400 205" fill="none" stroke="#1f6fd1" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M 210 245 L 400 245" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M 210 285 L 400 285" fill="none" stroke="#1b2832" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M 600 245 L 790 245" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M 600 285 L 790 285" fill="none" stroke="#1b2832" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M 600 330 L 670 330 L 720 370 L 790 370" fill="none" stroke="#1f6fd1" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M 600 370 L 670 370 L 720 330 L 790 330" fill="none" stroke="#1f6fd1" stroke-width="2.5" stroke-linejoin="round"/>
+<text x="695" y="316" font-size="13" font-weight="500" fill="#5b6b77" text-anchor="middle">gekreuzt</text>
+<path d="M 225 92 L 385 92" fill="none" stroke="#1f6fd1" stroke-width="2" stroke-linejoin="round"/>
+<path d="M 385 92 L 377 87 L 377 97 Z" fill="#1f6fd1"/>
+<text x="305.0" y="84" font-size="13" font-weight="500" fill="#1f6fd1" text-anchor="middle">S.Port / F.Port / FBUS, invertiert</text>
+<path d="M 385 108 L 225 108" fill="none" stroke="#23804f" stroke-width="2" stroke-linejoin="round"/>
+<path d="M 225 108 L 233 103 L 233 113 Z" fill="#23804f"/>
+<text x="305.0" y="125" font-size="13" font-weight="500" fill="#23804f" text-anchor="middle">Telemetrie, invertiert</text>
+<path d="M 615 92 L 775 92" fill="none" stroke="#1f6fd1" stroke-width="2" stroke-linejoin="round"/>
+<path d="M 775 92 L 767 87 L 767 97 Z" fill="#1f6fd1"/>
+<text x="695.0" y="84" font-size="13" font-weight="500" fill="#1f6fd1" text-anchor="middle">dasselbe, nicht invertiert</text>
+<path d="M 775 108 L 615 108" fill="none" stroke="#23804f" stroke-width="2" stroke-linejoin="round"/>
+<path d="M 615 108 L 623 103 L 623 113 Z" fill="#23804f"/>
+<text x="695.0" y="125" font-size="13" font-weight="500" fill="#23804f" text-anchor="middle">Telemetrie der FC</text>
+<text x="500" y="435" font-size="14" font-weight="600" fill="#1f6fd1" text-anchor="middle">Betriebsart Inverter</text>
+<text x="40" y="395" font-size="14" font-weight="600" fill="#1b2832" text-anchor="start">FC-Einstellung</text>
+<text x="40" y="417" font-size="13" font-weight="400" fill="#5b6b77" text-anchor="start">INAV: Provider FPORT / FBUS,</text>
+<text x="40" y="437" font-size="13" font-weight="400" fill="#5b6b77" text-anchor="start">serialrx_inverted = ON, halfduplex = OFF</text>
+<text x="40" y="457" font-size="13" font-weight="400" fill="#5b6b77" text-anchor="start">ArduPilot: SERIALx_PROTOCOL = 23 bzw. 10</text>
+<path d="M 40 482 L 64 482" fill="none" stroke="#1f6fd1" stroke-width="3" stroke-linejoin="round"/>
+<text x="72" y="487" font-size="13" font-weight="400" fill="#5b6b77" text-anchor="start">Signal</text>
+<path d="M 150 482 L 174 482" fill="none" stroke="#23804f" stroke-width="3" stroke-linejoin="round"/>
+<text x="182" y="487" font-size="13" font-weight="400" fill="#5b6b77" text-anchor="start">Rückweg</text>
+<path d="M 260 482 L 284 482" fill="none" stroke="#c0392b" stroke-width="3" stroke-linejoin="round"/>
+<text x="292" y="487" font-size="13" font-weight="400" fill="#5b6b77" text-anchor="start">5 V</text>
+<path d="M 370 482 L 394 482" fill="none" stroke="#1b2832" stroke-width="3" stroke-linejoin="round"/>
+<text x="402" y="487" font-size="13" font-weight="400" fill="#5b6b77" text-anchor="start">GND</text>
+<text x="960" y="487" font-size="12" font-weight="400" fill="#5b6b77" text-anchor="end">Pins: RP2040-Zero „26/27/28“, XIAO D0/D1/D2, Pico 31/32/34</text>
+</svg>

@@ -1,0 +1,89 @@
+; rx-bridge – transparent bidirectional inverter for FrSky S.Port / F.Port / FBUS
+;
+; All programs work in the *logical* UART domain (idle = high). If the receiver
+; line is inverted (FrSky default), the C code inverts the LINE pin with the GPIO
+; input/output overrides, so the PIO code is the same for both polarities.
+;
+; Pins (logical):
+;   LINE   – single-wire bus to the receiver, bidirectional
+;   RX     – module input, connected to the TX pin of the flight controller
+;   TX     – module output, connected to the RX pin of the flight controller
+
+
+; ---------------------------------------------------------------------------
+; line_mirror: TX follows LINE, one system clock per sample.
+;   in_base  = LINE
+;   out_base = TX (1 pin)
+; The FC also sees its own transmissions (echo), exactly like a hardware
+; inverter cable. INAV and ArduPilot expect this in full-duplex mode.
+; ---------------------------------------------------------------------------
+.program line_mirror
+.wrap_target
+    mov pins, pins
+.wrap
+
+
+; ---------------------------------------------------------------------------
+; fc_tx_drive: puts the FC's transmit data onto the single-wire LINE.
+;   in_base  = RX   (for wait)
+;   jmp_pin  = RX
+;   set_base = LINE    (value and direction)
+;   Y        = hold count, preloaded by the C code
+;
+; While the FC sends, LINE is driven push-pull with the level on RX. After
+; RX has stayed idle (high) for the hold time, LINE is released again so
+; the receiver can talk. Driving the idle level actively for a short time gives
+; a fast, clean edge without needing a strong external pull resistor.
+; Hold time = 2 * Y system clocks.
+; ---------------------------------------------------------------------------
+.program fc_tx_drive
+release:
+    set pindirs, 0          ; LINE belongs to the receiver
+    wait 0 pin 0            ; start bit from the FC
+drive_low:
+    set pins, 0
+    set pindirs, 1          ; drive LINE (logical low)
+wait_high:
+    jmp pin, drive_high
+    jmp wait_high
+drive_high:
+    set pins, 1             ; RX went high: drive logical high (idle level)
+    mov x, y
+hold:
+    jmp pin, hold_dec       ; still high?
+    jmp drive_low           ; next bit / byte started
+hold_dec:
+    jmp x--, hold
+    jmp release             ; idle long enough: hand the line back
+
+
+; ---------------------------------------------------------------------------
+; pulse_meter: measures every logical-low pulse on LINE (start bit, 0 bits).
+;   in_base = LINE, jmp_pin = LINE
+; Pushes ~count; pulse length ~= 2 * count system clocks. The shortest pulse
+; over a time window is one bit, which gives the baud rate.
+; ---------------------------------------------------------------------------
+.program pulse_meter
+.wrap_target
+    wait 1 pin 0
+    wait 0 pin 0
+    mov x, ~null
+low_loop:
+    jmp pin, done
+    jmp x--, low_loop
+done:
+    mov isr, x
+    push noblock
+.wrap
+
+
+; ---------------------------------------------------------------------------
+; edge_counter: one FIFO entry per falling edge on RX (activity indicator).
+;   in_base = RX
+; ---------------------------------------------------------------------------
+.program edge_counter
+.wrap_target
+    wait 0 pin 0
+    wait 1 pin 0
+    push noblock
+.wrap

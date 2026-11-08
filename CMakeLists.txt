@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 3.13)
+
+include(pico_sdk_import.cmake)
+project(rx_bridge C CXX ASM)
+set(CMAKE_C_STANDARD 11)
+pico_sdk_init()
+
+add_executable(rx_bridge src/main.c src/proto/frsky.c src/proto/crsf.c src/proto/telem.c src/proto/convert.c src/webcmd.c)
+target_include_directories(rx_bridge PRIVATE src)
+target_compile_options(rx_bridge PRIVATE -Wall -Wextra)
+target_compile_definitions(rx_bridge PRIVATE RXB_BOARD="${PICO_BOARD}")
+pico_generate_pio_header(rx_bridge ${CMAKE_CURRENT_LIST_DIR}/src/bridge.pio)
+pico_generate_pio_header(rx_bridge ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio)
+pico_generate_pio_header(rx_bridge ${CMAKE_CURRENT_LIST_DIR}/src/uart.pio)
+
+foreach(p PIN_LINE PIN_RX PIN_TX)
+  if(DEFINED ${p})
+    target_compile_definitions(rx_bridge PRIVATE ${p}=${${p}})
+  endif()
+endforeach()
+
+target_link_libraries(rx_bridge pico_stdlib pico_multicore hardware_pio hardware_clocks hardware_flash hardware_sync hardware_watchdog)
+pico_enable_stdio_usb(rx_bridge 1)
+pico_enable_stdio_uart(rx_bridge 0)
+pico_set_program_name(rx_bridge "rx-bridge")
+pico_set_program_description(rx_bridge "FrSky S.Port/F.Port/FBUS inverter and FBUS/F.Port to CRSF converter")
+pico_set_program_version(rx_bridge "0.3.2")
+pico_add_extra_outputs(rx_bridge)
