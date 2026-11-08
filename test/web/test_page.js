@@ -1,11 +1,11 @@
-// Browser test of web/index.html with a simulated rx-bridge behind navigator.serial.
+// Browser test of web/rx-bridge-config.html with a simulated rx-bridge behind navigator.serial.
 // usage: node test_page.js <screenshot dir>
 // Needs Playwright with Chromium (require('playwright')).
 const { chromium } = require("playwright");
 const fs = require("fs");
 const path = require("path");
 
-const PAGE = "file://" + path.resolve(__dirname, "../../web/index.html");
+const PAGE = "file://" + path.resolve(__dirname, "../../web/rx-bridge-config.html");
 const DEVICE_LINES = fs.readFileSync(path.join(__dirname, "device_lines.jsonl"), "utf8").trim().split("\n");
 const OUT = process.argv[2] || "/tmp";
 

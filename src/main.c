@@ -510,7 +510,7 @@ static void print_help(void) {
            "  s  Einstellungen dauerhaft speichern\n"
            "  q  Statusausgabe ein/aus\n"
            "  b  Neustart in den USB-Bootloader (Firmware-Update)\n"
-           "Komfortabler: Konfigurationsseite web/index.html in Chrome oder Edge oeffnen.\n");
+           "Komfortabler: Konfigurationsseite rx-bridge-config.html in Chrome oder Edge oeffnen.\n");
 }
 
 static void print_settings(void) {

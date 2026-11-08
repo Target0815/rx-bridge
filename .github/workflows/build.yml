@@ -68,7 +68,7 @@ jobs:
 
       - name: Dateien zusammenstellen
         run: |
-          cp web/index.html dist/rx-bridge-config.html
+          cp web/rx-bridge-config.html dist/
           ls -l dist
 
       - name: Als Build-Artefakt ablegen

@@ -63,8 +63,9 @@ Nur bei RP2350-Modulen: zusätzlich einen Widerstand 4,7 kΩ von LEITUNG nach GN
 
 ## 3. Einstellen
 
-1. Die Datei `web/index.html` per Doppelklick in Chrome oder Edge öffnen. Internet ist nicht nötig.
-   (Sie liegt im Projekt und als `rx-bridge-config.html` auf der Release-Seite.)
+1. Die Datei `rx-bridge-config.html` von der
+   [Release-Seite](https://github.com/Target0815/rx-bridge/releases) herunterladen (oder aus dem
+   Ordner `web/` nehmen) und per Doppelklick in Chrome oder Edge öffnen. Internet ist nicht nötig.
 2. Modul per USB anschließen (ohne BOOT-Taste), auf **Verbinden** klicken und das Gerät auswählen.
 3. Betriebsart wählen und **Speichern** klicken. Beim Wechsel der Betriebsart startet das Modul
    neu und die Seite verbindet sich von selbst wieder.

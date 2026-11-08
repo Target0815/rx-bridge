@@ -24,7 +24,7 @@ Konverter-Betrieb (in 0.3.0 blieb das Modul dort hängen). Der Konverter erkennt
 der FC (INAV oder ArduPilot mit Version). Auf der Seite lässt sich das Protokoll beim
 Verbinden automatisch leeren.
 
-**Neu in 0.3.0:** Konfigurationsseite (`web/index.html` im Projektordner), Einstellung RC-System,
+**Neu in 0.3.0:** Konfigurationsseite (`web/rx-bridge-config.html` im Projektordner), Einstellung RC-System,
 Schaltbilder, Erklärung aller Telemetrie-Sensoren.
 
 ## Boards und Flashen
@@ -44,7 +44,7 @@ Schaltbilder, Erklärung aller Telemetrie-Sensoren.
 
 ## Konfigurationsseite
 
-`web/index.html` in **Chrome oder Edge** auf dem Computer öffnen (Doppelklick auf die Datei
+`web/rx-bridge-config.html` in **Chrome oder Edge** auf dem Computer öffnen (Doppelklick auf die Datei
 genügt, eine Internetverbindung ist nicht nötig). Firefox und Safari können nicht auf
 USB-Geräte zugreifen.
 

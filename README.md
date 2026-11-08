@@ -47,8 +47,9 @@ Die Verdrahtung ist in beiden Betriebsarten gleich. RX und TX zum Flight-Control
 
 ## Einstellen im Browser
 
-Die Konfiguration läuft über eine Webseite (`web/index.html`), die ihr einfach in Chrome oder
-Edge öffnet. Ein Terminalprogramm oder Internet braucht ihr nicht. Dort wählt ihr die
+Die Konfiguration läuft über eine Webseite, die ihr einfach in Chrome oder Edge öffnet: die Datei
+`rx-bridge-config.html` von der Release-Seite (oder aus dem Ordner `web/`). Ein Terminalprogramm
+oder Internet braucht ihr nicht. Dort wählt ihr die
 Betriebsart und seht live, ob vom Empfänger etwas ankommt, wie gut die Verbindung ist und ob
 der Flight-Controller antwortet.
 
