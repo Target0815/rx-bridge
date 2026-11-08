@@ -15,7 +15,8 @@ Inverterkabel nichts.
 ## Was ihr braucht
 
 - Ein RP2040- oder RP2350-Modul: Waveshare RP2040-Zero, Seeed XIAO RP2040, Raspberry Pi Pico
-  oder die RP2350-Varianten davon
+  oder die RP2350-Varianten davon. Getestet mit den **originalen Waveshare-Boards** RP2040-Zero
+  und RP2350-Zero; von Nachbauten (Clones) rate ich ab. XIAO und Pico sind noch ungetestet.
 - einen Widerstand 470 Ω
 - ein USB-Kabel und einen Computer mit **Chrome** oder **Edge** (für die Einstellungen)
 

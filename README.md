@@ -24,12 +24,17 @@ die passende `.uf2`-Datei für euer Modul.
 ## Was ihr braucht
 
 - Ein RP2040- oder RP2350-Board: Waveshare RP2040-Zero, Seeed XIAO RP2040, Raspberry Pi Pico
-  oder die RP2350-Varianten davon
+  oder die RP2350-Varianten davon (siehe Hinweis unten)
 - Einen Widerstand 470 Ω (bei RP2350-Boards zusätzlich 4,7 kΩ von LEITUNG nach GND)
 - Ein USB-Kabel und einen Computer mit Chrome oder Edge
 
 Die Firmware wird einfach per Drag & Drop auf das Board gezogen, eine Programmierumgebung ist
 nicht nötig.
+
+> **Hinweis zu den Boards:** Getestet habe ich mit den **originalen Boards von Waveshare**,
+> RP2040-Zero und RP2350-Zero. Von Nachbauten (Clones) rate ich ab. Die Firmware für
+> Seeed XIAO und Raspberry Pi Pico wird mitgebaut, ist auf echter Hardware aber noch nicht
+> getestet.
 
 ## Anschluss
 
