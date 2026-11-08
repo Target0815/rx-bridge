@@ -23,7 +23,7 @@ Inverterkabel nichts.
 
 1. BOOT-Taste am Modul gedrückt halten und das Modul per USB an den Computer anschließen.
 2. Es erscheint ein Laufwerk `RPI-RP2` (bei RP2350: `RP2350`).
-3. Die passende Datei von der [Release-Seite](https://github.com/target0815/rx-bridge/releases)
+3. Die passende Datei von der [Release-Seite](https://github.com/Target0815/rx-bridge/releases)
    herunterladen und auf dieses Laufwerk ziehen:
 
 | Modul | Datei |

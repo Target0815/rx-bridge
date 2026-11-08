@@ -31,9 +31,9 @@
 <text x="875.0" y="170" font-size="19" font-weight="600" fill="#1b2832" text-anchor="middle">Flight-Controller</text>
 <text x="875.0" y="190" font-size="13" font-weight="400" fill="#5b6b77" text-anchor="middle">F405, INAV / ArduPilot</text>
 <circle cx="790" cy="330" r="4.5" fill="#1b2832"/>
-<text x="802" y="335" font-size="14" font-weight="500" fill="#1b2832" text-anchor="start">TX</text>
+<text x="802" y="335" font-size="14" font-weight="500" fill="#1b2832" text-anchor="start">RX</text>
 <circle cx="790" cy="370" r="4.5" fill="#1b2832"/>
-<text x="802" y="375" font-size="14" font-weight="500" fill="#1b2832" text-anchor="start">RX</text>
+<text x="802" y="375" font-size="14" font-weight="500" fill="#1b2832" text-anchor="start">TX</text>
 <circle cx="790" cy="245" r="4.5" fill="#1b2832"/>
 <text x="802" y="250" font-size="14" font-weight="500" fill="#1b2832" text-anchor="start">5V</text>
 <circle cx="790" cy="285" r="4.5" fill="#1b2832"/>

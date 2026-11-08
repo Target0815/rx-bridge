@@ -55,7 +55,7 @@ def diagram(mode):
     for label, py in (("GPIO27 RX", yRX), ("GPIO28 TX", yTX), ("5V", y5), ("GND", yG)):
         o.append(f'<circle cx="600" cy="{py}" r="4.5" fill="{INK}"/>')
         o.append(text(588, py + 5, label, 14, 500, anchor="end"))
-    o += block(790, 110 + D, 170, 270, "Flight-Controller", "F405, INAV / ArduPilot", [("TX", yRX), ("RX", yTX), ("5V", y5), ("GND", yG)], "l")
+    o += block(790, 110 + D, 170, 270, "Flight-Controller", "F405, INAV / ArduPilot", [("RX", yRX), ("TX", yTX), ("5V", y5), ("GND", yG)], "l")
 
     # signal wire with resistor
     o.append(wire([(210, yS), (265, yS)], SIG))
