@@ -1,0 +1,84 @@
+# Baut die Firmware für alle Boards und führt die Tests aus.
+# Bei einem veröffentlichten Release werden die .uf2-Dateien und die
+# Konfigurationsseite automatisch an das Release angehängt.
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # nur für das Anhängen an Releases nötig
+
+env:
+  PICO_SDK_VERSION: "2.1.1"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Werkzeuge installieren
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib \
+            cmake ninja-build python3
+
+      - name: Pico SDK aus dem Cache
+        id: sdk-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/pico-sdk
+          key: pico-sdk-${{ env.PICO_SDK_VERSION }}
+
+      - name: Pico SDK holen
+        if: steps.sdk-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch "$PICO_SDK_VERSION" \
+            --recurse-submodules --shallow-submodules \
+            https://github.com/raspberrypi/pico-sdk.git ~/pico-sdk
+
+      - name: Version lesen
+        id: ver
+        run: |
+          v=$(sed -n 's/^#define FW_VERSION "\(.*\)".*/\1/p' src/config.h)
+          echo "Firmware-Version: $v"
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+
+      - name: Tag passt zur Version
+        if: github.event_name == 'release'
+        run: |
+          tag="${{ github.event.release.tag_name }}"
+          if [ "${tag#v}" != "${{ steps.ver.outputs.version }}" ]; then
+            echo "::error::Release-Tag $tag passt nicht zu FW_VERSION ${{ steps.ver.outputs.version }} in src/config.h"
+            exit 1
+          fi
+
+      - name: Firmware bauen (6 Boards)
+        run: PICO_SDK_PATH=~/pico-sdk ./build_all.sh
+
+      - name: Tests
+        run: sh test/run_tests.sh
+
+      - name: Dateien zusammenstellen
+        run: |
+          cp web/index.html dist/rx-bridge-config.html
+          ls -l dist
+
+      - name: Als Build-Artefakt ablegen
+        uses: actions/upload-artifact@v4
+        with:
+          name: rx-bridge-${{ steps.ver.outputs.version }}
+          path: dist/*
+
+      - name: An das Release anhängen
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" dist/* --clobber

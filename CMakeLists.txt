@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.13)
 
 include(pico_sdk_import.cmake)
 project(rx_bridge C CXX ASM)
+
+# version from src/config.h (single source)
+file(STRINGS src/config.h RXB_VERSION_LINE REGEX "^#define FW_VERSION ")
+string(REGEX REPLACE ".*\"(.*)\".*" "\\1" RXB_VERSION "${RXB_VERSION_LINE}")
 set(CMAKE_C_STANDARD 11)
 pico_sdk_init()
 
@@ -24,5 +28,5 @@ pico_enable_stdio_usb(rx_bridge 1)
 pico_enable_stdio_uart(rx_bridge 0)
 pico_set_program_name(rx_bridge "rx-bridge")
 pico_set_program_description(rx_bridge "FrSky S.Port/F.Port/FBUS inverter and FBUS/F.Port to CRSF converter")
-pico_set_program_version(rx_bridge "0.3.2")
+pico_set_program_version(rx_bridge "${RXB_VERSION}")
 pico_add_extra_outputs(rx_bridge)

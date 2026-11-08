@@ -351,3 +351,20 @@ test/run_tests.sh /tmp/inav
 
 Für den Browsertest werden Node.js und Playwright mit Chromium gebraucht; fehlen sie, wird
 der Test übersprungen.
+
+### Automatischer Build auf GitHub
+
+`.github/workflows/build.yml` baut bei jedem Push auf `main` und bei Pull Requests alle sechs
+Boards mit Pico SDK 2.1.1 und führt die Tests aus (ohne INAV-Gegenprobe). Die Dateien liegen
+danach unter **Actions** beim jeweiligen Lauf als Artefakt zum Herunterladen.
+
+Neue Version veröffentlichen:
+
+1. `FW_VERSION` in `src/config.h` erhöhen. Das ist die einzige Stelle, `CMakeLists.txt` und
+   `build_all.sh` lesen die Version von dort.
+2. Committen und pushen.
+3. Auf GitHub ein Release mit dem Tag `v` + Version anlegen (z. B. `v0.3.3`) und veröffentlichen.
+
+Der Workflow prüft, ob Tag und `FW_VERSION` zusammenpassen, baut neu und hängt die sechs
+`.uf2`-Dateien und `rx-bridge-config.html` an das Release an. Passen Tag und Version nicht
+zusammen, bricht er ab und hängt nichts an.
